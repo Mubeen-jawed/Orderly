@@ -42,6 +42,7 @@ const sendTelegramMessage = async (order) => {
 // Order route
 app.post("/api/orders", async (req, res) => {
   try {
+    console.log("Order received:", req.body);
     const order = new Order(req.body);
     await order.save();
     await sendTelegramMessage(order);
