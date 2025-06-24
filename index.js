@@ -110,6 +110,7 @@ const Order = mongoose.model("Order", orderSchema);
 
 // Handle incoming orders
 app.post("/api/orders", async (req, res) => {
+  console.log("Incoming order:", req.body);
   const { name, address, items, total } = req.body;
 
   if (!name || !address || !items || items.length === 0) {
@@ -135,15 +136,15 @@ ${items.map((item) => `- ${item.name} (Rs ${item.price})`).join("\n")}
 📅 *Time:* ${new Date().toLocaleString()}
 `;
 
-    // Send to Telegram bot
-    // await axios.post(
-    //   `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-    //   {
-    //     chat_id: process.env.TELEGRAM_CHAT_ID,
-    //     text: message,
-    //     parse_mode: 'Markdown',
-    //   }
-    // );
+    Send to Telegram bot
+    await axios.post(
+      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+      {
+        chat_id: process.env.TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'Markdown',
+      }
+    );
 
     return res
       .status(200)
