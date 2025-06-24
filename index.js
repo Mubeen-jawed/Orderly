@@ -135,7 +135,7 @@ ${items.map((item) => `- ${item.name} (Rs ${item.price})`).join("\n")}
  *Total:* Rs ${total}
  *Time:* ${new Date().toLocaleString()}
   *Delivery Charges:* Rs 50
- *Platform Fee:* Rs 25
+ *Platform Fee:* Rs 15
 
 `;
 
