@@ -124,16 +124,19 @@ app.post("/api/orders", async (req, res) => {
 
     // Prepare Telegram message
     const message = `
-🛒 *New Food Order Received!*
+ *New Food Order Received!*
 
-👤 *Name:* ${name}
-🏠 *Address:* ${address}
+ *Name:* ${name}
+ *Address:* ${address}
 
-🍽️ *Items:*
+ *Items:*
 ${items.map((item) => `- ${item.name} (Rs ${item.price})`).join("\n")}
 
-💰 *Total:* Rs ${total}
-📅 *Time:* ${new Date().toLocaleString()}
+ *Total:* Rs ${total}
+ *Time:* ${new Date().toLocaleString()}
+  *Delivery Charges:* Rs 50
+ *Platform Fee:* Rs 25
+
 `;
 
     // Send to Telegram bot
