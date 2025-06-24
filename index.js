@@ -136,13 +136,13 @@ ${items.map((item) => `- ${item.name} (Rs ${item.price})`).join("\n")}
 📅 *Time:* ${new Date().toLocaleString()}
 `;
 
-    Send to Telegram bot
+    // Send to Telegram bot
     await axios.post(
       `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
       {
         chat_id: process.env.TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: 'Markdown',
+        parse_mode: "Markdown",
       }
     );
 
