@@ -148,9 +148,19 @@ app.post("/api/orders", async (req, res) => {
     });
     await newOrder.save();
 
+    const orderTime = new Date().toLocaleString("en-PK", {
+      timeZone: "Asia/Karachi",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
     // Prepare Telegram message
     const message = `
-*🛒 New Food Order!*
+*🛒 New Order!*
 
 🍽️ *Restaurant:* ${restaurantName}
 👤 *Customer:* ${customerDetails.name}
@@ -162,12 +172,12 @@ ${items
   .map((item) => `- ${item.name} x${item.quantity} (Rs ${item.subtotal})`)
   .join("\n")}
 
-💵 *Subtotal:* Rs ${pricing.subtotal}
-🚚 *Delivery Fee:* Rs ${pricing.deliveryFee}
-⚙️ *Platform Fee:* Rs ${pricing.platformFee}
-💰 *Total:* Rs ${pricing.total}
+ *Subtotal:* Rs ${pricing.subtotal}
+ *Delivery Fee:* Rs ${pricing.deliveryFee}
+ *Platform Fee:* Rs ${pricing.platformFee}
+ *Total:* Rs ${pricing.total}
 
-📅 *Order Time:* ${new Date().toLocaleString()}
+ *Order Time:* ${orderTime}
 `;
 
     // Send to Telegram
