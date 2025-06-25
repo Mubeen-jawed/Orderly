@@ -90,16 +90,29 @@ mongoose
 
 // Define Mongoose Schema
 const orderSchema = new mongoose.Schema({
-  name: String,
-  address: String,
+  restaurantName: String,
+  customerDetails: {
+    name: String,
+    phone: String,
+    address: String,
+  },
   items: [
     {
       id: Number,
       name: String,
+      description: String,
       price: Number,
+      quantity: Number,
+      subtotal: Number,
     },
   ],
-  total: Number,
+  pricing: {
+    subtotal: Number,
+    deliveryFee: Number,
+    platformFee: Number,
+    total: Number,
+  },
+  orderDate: String, // keep ISO string format
   createdAt: {
     type: Date,
     default: Date.now,
@@ -110,36 +123,54 @@ const Order = mongoose.model("Order", orderSchema);
 
 // Handle incoming orders
 app.post("/api/orders", async (req, res) => {
-  console.log("Incoming order:", req.body);
-  const { name, address, items, total } = req.body;
+  const { restaurantName, customerDetails, items, pricing, orderDate } =
+    req.body;
 
-  if (!name || !address || !items || items.length === 0) {
+  // Basic validation
+  if (
+    !customerDetails?.name ||
+    !customerDetails?.address ||
+    !items ||
+    items.length === 0 ||
+    !pricing?.total
+  ) {
     return res.status(400).json({ error: "Missing order details" });
   }
 
   try {
-    // Save order to MongoDB
-    const newOrder = new Order({ name, address, items, total });
+    // Save full rich order
+    const newOrder = new Order({
+      restaurantName,
+      customerDetails,
+      items,
+      pricing,
+      orderDate,
+    });
     await newOrder.save();
 
     // Prepare Telegram message
     const message = `
- *New Food Order Received!*
+*🛒 New Food Order!*
 
- *Name:* ${name}
- *Address:* ${address}
+🍽️ *Restaurant:* ${restaurantName}
+👤 *Customer:* ${customerDetails.name}
+📞 *Phone:* ${customerDetails.phone}
+🏠 *Address:* ${customerDetails.address}
 
- *Items:*
-${items.map((item) => `- ${item.name} (Rs ${item.price})`).join("\n")}
+*Items:*
+${items
+  .map((item) => `- ${item.name} x${item.quantity} (Rs ${item.subtotal})`)
+  .join("\n")}
 
- *Total:* Rs ${total}
- *Time:* ${new Date().toLocaleString()}
-  *Delivery Charges:* Rs 50
- *Platform Fee:* Rs 15
+💵 *Subtotal:* Rs ${pricing.subtotal}
+🚚 *Delivery Fee:* Rs ${pricing.deliveryFee}
+⚙️ *Platform Fee:* Rs ${pricing.platformFee}
+💰 *Total:* Rs ${pricing.total}
 
+📅 *Order Time:* ${new Date().toLocaleString()}
 `;
 
-    // Send to Telegram bot
+    // Send to Telegram
     await axios.post(
       `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
       {
